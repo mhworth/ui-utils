@@ -2,7 +2,7 @@
 describe('uiWaypoints', function () {
   'use strict';
 
-  var scope, $compile, $window, $body;
+  var scope, $compile, $window, $body, $container;
   beforeEach(module('ui.waypoints'));
   beforeEach(inject(function (_$rootScope_, _$compile_, _$window_) {
     scope = _$rootScope_.$new();
@@ -11,6 +11,9 @@ describe('uiWaypoints', function () {
     scope.enter = function() {};
     scope.exit = function() {}
     $body = angular.element("body");
+    $container = angular.element('<div id="container"></div>');
+    angular.element("#container").remove();
+    $body.append($container);
   }));
 
   describe('compiling this directive', function () {
@@ -32,7 +35,7 @@ describe('uiWaypoints', function () {
 
       // Test Fixture
       var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="f"></div><div style="height:900px">');
-      $body.append(element);
+      $container.append(element);
       $compile($body.contents())(scope)
       var $fixture = angular.element("#test");
 
@@ -46,12 +49,12 @@ describe('uiWaypoints', function () {
     });
 
     it('should call the enter function when the window transitions from above to below the element', function () {
-      scope.f = function(){}
-      spyOn(scope, 'f');
+      scope.g = function(){}
+      spyOn(scope, 'g');
 
       // Test Fixture
-      var element = angular.element('<div style="height:900px"></div><div ui-waypoints="{\'enter\': g}"></div><div style="height:900px">');
-      $body.append(element);
+      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'enter\': g}"></div><div style="height:900px">');
+      $container.append(element);
       $compile($body.contents())(scope)
       var $fixture = angular.element("#test");
 
@@ -60,15 +63,15 @@ describe('uiWaypoints', function () {
       angular.element($window).trigger('scroll');
 
       
-      expect(scope.f).toHaveBeenCalledWith("down", $fixture[0]);
+      expect(scope.g).toHaveBeenCalledWith("down", $fixture[0]);
     });
 
     it('should call the exit function when the window transitions from below to above the element', function () {
-      scope.f = function(){}
-      spyOn(scope, 'f');
+      scope.g = function(){};
+      spyOn(scope, 'g');
 
       // Test Fixture
-      var element = angular.element('<div style="height:900px"></div><div ui-waypoints="{\'exit\': g}"></div><div style="height:900px">');
+      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'exit\': g}"></div><div style="height:900px">');
       $body.append(element);
       $compile($body.contents())(scope)
       var $fixture = angular.element("#test");
@@ -82,7 +85,7 @@ describe('uiWaypoints', function () {
       angular.element($window).trigger('scroll');
 
 
-      expect(scope.f).toHaveBeenCalled();
+      expect(scope.g).toHaveBeenCalledWith("up", $fixture[0]);
     });
 
     // it('should call the enter function when the window transitions from left to right of element', function () {
