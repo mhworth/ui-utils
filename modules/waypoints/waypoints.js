@@ -31,7 +31,6 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       // Options are either an object, a function (enter callback), or an error
       var getter = $parse(attrs.uiWaypoints);
       var arg = getter(scope);
-      console.log("arg is", arg, attrs.uiWaypoints);
       if(typeof(arg) == 'object') {
         options = angular.extend(options,arg);
       } else if(typeof(arg) == 'function') {
@@ -102,13 +101,8 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
           if(activeDirection == "horizontal") {
             currentOffset = xOffset;
           }
-          console.log("Active direction", activeDirection);
-          console.log("Current offset", currentOffset);
-          console.log("offset", offset);
-          console.log("Above?", above);
           if(above[activeDirection] && currentOffset > offset[activeDirection]) {
             var direction = activeDirection == "vertical" ? "down" : "right";
-            console.log("Calling enter and both functions", options.enter, options.both);
             if(options.enter) {
               options.enter(direction, elm[0]);
             }
@@ -120,7 +114,6 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
             above[activeDirection] = false;
           } else if(!above[activeDirection] && currentOffset < offset[activeDirection]) {
             var direction = activeDirection == "vertical" ? "up" : "left";
-            console.log("Calling exit and both functions", options.exit, options.both);
             if(options.exit) {
               options.exit(direction, elm[0]);
             }
