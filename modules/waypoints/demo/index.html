@@ -11,15 +11,16 @@
       <script type="text/javascript">
         function WaypointsExampleCtrl($scope) {
           $scope.callback = function(direction, element) {
-            alert(direction);
+            $scope.direction = direction;
           }
-          console.log("WaypointsExampleCtrl was here");
         }
       </script>
 
       <div id="waypointsExample" class="well" ng-controller="WaypointsExampleCtrl" style="height:1000px">
-        <p ui-waypoints="callback" style="color: red">They see me scrollin...</p>
-        Try scrolling past the red text or changing the offset
+        <p style="height: 100px">Try scrolling past the red text or changing the offset</p>
+        <p ui-waypoints="callback" style="color: red; height: 100px">They see me scrollin...</p>
+        
+        <p id="waypointsOutput" ng-hide="direction == null">You scrolled {{direction}} past the message</p>
       </div>
     </div>
     <div class="span6">

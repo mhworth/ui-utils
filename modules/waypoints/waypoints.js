@@ -132,7 +132,10 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
           }
         }// for(i in directions)
         
-
+        // Need this since we aren't in an angular event handler
+        if(!(scope.$$phase || scope.$root.$$phase)) {
+          scope.$apply();
+        }
       });
     }
   };
