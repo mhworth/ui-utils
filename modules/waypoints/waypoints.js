@@ -40,8 +40,8 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       }
 
       // Get the current offsets
-      var top = elm[0].offsetTop,
-          left = elm[0].offsetLeft;
+      var top = elm.offset().top,
+          left = elm.offset().left;
 
 
       // This is what we will watch for scrolling events; defaults to window if not otherwise specified

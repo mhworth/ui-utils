@@ -11,8 +11,8 @@ describe('uiWaypoints', function () {
     scope.enter = function() {};
     scope.exit = function() {}
     $body = angular.element("body");
+    $body.empty();
     $container = angular.element('<div id="container"></div>');
-    angular.element("#container").remove();
     $body.append($container);
   }));
 
