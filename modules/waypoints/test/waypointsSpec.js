@@ -49,11 +49,11 @@ describe('uiWaypoints', function () {
     });
 
     it('should call the enter function when the window transitions from above to below the element', function () {
-      scope.g = function(){}
-      spyOn(scope, 'g');
+      scope.enter = function(){}
+      spyOn(scope, 'enter');
 
       // Test Fixture
-      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'enter\': g}"></div><div style="height:900px">');
+      var element = angular.element('<div><div style="height:900px"></div><div id="test" ui-waypoints="{\'enter\': enter}"></div><div style="height:900px"></div>');
       $container.append(element);
       $compile($body.contents())(scope)
       var $fixture = angular.element("#test");
@@ -63,7 +63,7 @@ describe('uiWaypoints', function () {
       angular.element($window).trigger('scroll');
 
       
-      expect(scope.g).toHaveBeenCalledWith("down", $fixture[0]);
+      expect(scope.enter).toHaveBeenCalledWith("down", $fixture[0]);
     });
 
     it('should call the exit function when the window transitions from below to above the element', function () {
@@ -72,7 +72,7 @@ describe('uiWaypoints', function () {
 
       // Test Fixture
       var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'exit\': g}"></div><div style="height:900px">');
-      $body.append(element);
+      $container.append(element);
       $compile($body.contents())(scope)
       var $fixture = angular.element("#test");
 
@@ -88,23 +88,21 @@ describe('uiWaypoints', function () {
       expect(scope.g).toHaveBeenCalledWith("up", $fixture[0]);
     });
 
-    // it('should call the enter function when the window transitions from left to right of element', function () {
-    //   scope.f = function(){}
-    //   spyOn(scope, 'f');
+    it('should call the enter function when the window transitions from left to right of element', function () {
+      scope.f = function(){}
+      spyOn(scope, 'f');
 
-    //   // Test Fixture
-    //   var element = angular.element('<div><div style="height:10px; width:1300px;"></div><div ui-waypoints="{\'enter\': g}" style="display:inline; width:1200px"></div></div>');
-    //   $body.append(element);
-    //   $compile($body.contents())(scope)
-    //   var $fixture = angular.element("#test");
-
-    //   // Scroll past
-    //   angular.element($window).scrollTop($fixture.offset().top + 50);
-    //   angular.element($window).trigger('scroll');
-
+      // Test Fixture
+      var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test" ui-waypoints="{\'enter\': f}" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
+      $container.append(element);
+      $compile($body.contents())(scope)
+      var $fixture = angular.element("#test");
+      // Scroll past
+      angular.element($window).scrollLeft($fixture.offset().left + 50);
+      angular.element($window).trigger('scroll');
       
-    //   expect(scope.f).toHaveBeenCalledWith('right');
-    // });
+      expect(scope.f).toHaveBeenCalledWith('right', $fixture[0]);
+    });
 
     
     

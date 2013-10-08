@@ -39,40 +39,42 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       } else {
         throw new Error("ui-waypoints requires an expression that evaluates to either a function or an object");
       }
-      console.log("Options are", options);
-      
 
       // Get the current offsets
       var top = elm[0].offsetTop,
           left = elm[0].offsetLeft;
-
-      var referenceOffset = top;
-      if(options.direction == "horizontal") {
-        referenceOffset = left;
-      }
 
 
       // This is what we will watch for scrolling events; defaults to window if not otherwise specified
       var $target = uiWaypointsTarget && uiWaypointsTarget.$element || angular.element($window);
 
       // Decide on the location to trigger the events from
-      var offset;
-      if (!options.offset) {
-        offset = referenceOffset;
-      } else if (typeof(options.offset) === 'string') {
-        // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
-        if (options.offset.charAt(0) === '-') {
-          offset = referenceOffset - parseFloat(options.offset.substr(1));
-        } else if (options.offset.charAt(0) === '+') {
-          offset = referenceOffset + parseFloat(attrs.uiWaypoints.substr(1));
+      var offset = {vertical: top, horizontal: left};
+      var references = ["vertical", "horizontal"];
+
+      if(options.offset) {
+        for(var i in references) {
+          var reference = references[i];
+          if (typeof(options.offset[reference]) === 'string') {
+            // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
+            if (options.offset[reference].charAt(0) === '-') {
+              offset[reference] = offset[reference] - parseFloat(options.offset[reference].substr(1));
+            } else if (options.offset.charAt(0) === '+') {
+              offset[reference] = offset[reference] + parseFloat(attrs.uiWaypoints.substr(1));
+            }
+          } else if(typeof(options.offset[reference]) == "number") {
+            offset[reference] = offset[reference] + options.offset[reference];
+          }// Offset established
         }
-      } else if(typeof(options.offset) == "number") {
-        offset = referenceOffset + options.offset;
-      }// Offset established
+      }
+      
 
       // We will start in the "above" state, meaning no events will be
       // thrown until we pass the element by scrolling
-      var above = true;
+      var above = {
+        "vertical": true,
+        "horizontal": true
+      };
 
       $target.bind('scroll', function () {
 
@@ -87,31 +89,49 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
           xOffset = iebody.scrollLeft;
         }
 
-        // Select the offset based on whether we're interested in vertical or horizontal
-        var currentOffset = yOffset;
+        
 
         // Do callbacks
-        if(above && currentOffset > offset) {
-          var direction = options.direction == "vertical" ? "down" : "right";
-          if(options.enter)
-            options.enter(direction, elm[0]);
-          if(options.both)
-            options.both(direction, elm[0]);
-          above = false;
-        } else if(!above && currentOffset < offset) {
-          var direction = options.direction == "vertical" ? "up" : "left";
+        var directions = ["vertical","horizontal"];
+        for(var i in directions) {
 
-          if(options.exit) {
-            console.log("Calling exit with",direction);
-            options.exit(direction, elm[0]);
+          var activeDirection = directions[i];
+
+          // Select the offset based on whether we're interested in vertical or horizontal
+          var currentOffset = yOffset;
+          if(activeDirection == "horizontal") {
+            currentOffset = xOffset;
           }
-            
-          if(options.both){
-            console.log("Calling both with",direction);
-            options.both(direction, elm[0]);
+          console.log("Active direction", activeDirection);
+          console.log("Current offset", currentOffset);
+          console.log("offset", offset);
+          console.log("Above?", above);
+          if(above[activeDirection] && currentOffset > offset[activeDirection]) {
+            var direction = activeDirection == "vertical" ? "down" : "right";
+            console.log("Calling enter and both functions", options.enter, options.both);
+            if(options.enter) {
+              options.enter(direction, elm[0]);
+            }
+              
+            if(options.both) {
+              options.both(direction, elm[0]);
+            }
+              
+            above[activeDirection] = false;
+          } else if(!above[activeDirection] && currentOffset < offset[activeDirection]) {
+            var direction = activeDirection == "vertical" ? "up" : "left";
+            console.log("Calling exit and both functions", options.exit, options.both);
+            if(options.exit) {
+              options.exit(direction, elm[0]);
+            }
+              
+            if(options.both){
+              options.both(direction, elm[0]);
+            }
+            above[activeDirection] = true;
           }
-          above = true;
-        }
+        }// for(i in directions)
+        
 
       });
     }
