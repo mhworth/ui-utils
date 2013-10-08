@@ -45,8 +45,8 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
 
       var getCurrentOffsets = function() {
         // Get the current offsets
-        var top = elm.offset().top,
-            left = elm.offset().left;
+        var top = elm[0].offsetTop,
+            left = elm[0].offsetLeft;
         
         // Decide on the location to trigger the events from
         var offset = {vertical: top, horizontal: left};
