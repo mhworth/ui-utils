@@ -39,33 +39,38 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
         throw new Error("ui-waypoints requires an expression that evaluates to either a function or an object");
       }
 
-      // Get the current offsets
-      var top = elm.offset().top,
-          left = elm.offset().left;
-
-
       // This is what we will watch for scrolling events; defaults to window if not otherwise specified
       var $target = uiWaypointsTarget && uiWaypointsTarget.$element || angular.element($window);
 
-      // Decide on the location to trigger the events from
-      var offset = {vertical: top, horizontal: left};
-      var references = ["vertical", "horizontal"];
 
-      if(options.offset) {
-        for(var i in references) {
-          var reference = references[i];
-          if (typeof(options.offset[reference]) === 'string') {
-            // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
-            if (options.offset[reference].charAt(0) === '-') {
-              offset[reference] = offset[reference] - parseFloat(options.offset[reference].substr(1));
-            } else if (options.offset.charAt(0) === '+') {
-              offset[reference] = offset[reference] + parseFloat(attrs.uiWaypoints.substr(1));
-            }
-          } else if(typeof(options.offset[reference]) == "number") {
-            offset[reference] = offset[reference] + options.offset[reference];
-          }// Offset established
+      var getCurrentOffsets = function() {
+        // Get the current offsets
+        var top = elm.offset().top,
+            left = elm.offset().left;
+        
+        // Decide on the location to trigger the events from
+        var offset = {vertical: top, horizontal: left};
+        var references = ["vertical", "horizontal"];
+
+        if(options.offset) {
+          for(var i in references) {
+            var reference = references[i];
+            if (typeof(options.offset[reference]) === 'string') {
+              // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
+              if (options.offset[reference].charAt(0) === '-') {
+                offset[reference] = offset[reference] - parseFloat(options.offset[reference].substr(1));
+              } else if (options.offset.charAt(0) === '+') {
+                offset[reference] = offset[reference] + parseFloat(attrs.uiWaypoints.substr(1));
+              }
+            } else if(typeof(options.offset[reference]) == "number") {
+              offset[reference] = offset[reference] + options.offset[reference];
+            }// Offset established
+          }
         }
+
+        return offset;
       }
+      
       
 
       // We will start in the "above" state, meaning no events will be
@@ -88,6 +93,8 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
           xOffset = iebody.scrollLeft;
         }
 
+        // Get the current offset
+        var offset = getCurrentOffsets();
         
 
         // Do callbacks
