@@ -8,8 +8,6 @@ describe('uiWaypoints', function () {
     scope = _$rootScope_.$new();
     $compile = _$compile_;
     $window = _$window_;
-    scope.enter = function() {};
-    scope.exit = function() {}
     $body = angular.element("body");
     $body.empty();
     $container = angular.element('<div id="container"></div>');
@@ -29,14 +27,14 @@ describe('uiWaypoints', function () {
     it('should trigger function if a function call is specified', function () {
       scope.f = function(){
         return "A";
-      }
+      };
 
       spyOn(scope, 'f');
 
       // Test Fixture
       var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="f"></div><div style="height:900px">');
       $container.append(element);
-      $compile($body.contents())(scope)
+      $compile($body.contents())(scope);
       var $fixture = angular.element("#test");
 
       // Scroll the window to the test element
@@ -49,13 +47,13 @@ describe('uiWaypoints', function () {
     });
 
     it('should call the enter function when the window transitions from above to below the element', function () {
-      scope.enter = function(){}
+      scope.enter = function(){};
       spyOn(scope, 'enter');
 
       // Test Fixture
       var element = angular.element('<div><div style="height:900px"></div><div id="test" ui-waypoints="{\'enter\': enter}"></div><div style="height:900px"></div>');
       $container.append(element);
-      $compile($body.contents())(scope)
+      $compile($body.contents())(scope);
       var $fixture = angular.element("#test");
 
       // Scroll past
@@ -73,7 +71,7 @@ describe('uiWaypoints', function () {
       // Test Fixture
       var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'exit\': g}"></div><div style="height:900px">');
       $container.append(element);
-      $compile($body.contents())(scope)
+      $compile($body.contents())(scope);
       var $fixture = angular.element("#test");
 
       // Scroll past
@@ -89,13 +87,13 @@ describe('uiWaypoints', function () {
     });
 
     it('should call the enter function when the window transitions from left to right of element', function () {
-      scope.f = function(){}
+      scope.f = function(){};
       spyOn(scope, 'f');
 
       // Test Fixture
       var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test" ui-waypoints="{\'enter\': f}" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
       $container.append(element);
-      $compile($body.contents())(scope)
+      $compile($body.contents())(scope);
       var $fixture = angular.element("#test");
       // Scroll past
       angular.element($window).scrollLeft($fixture.offset().left + 50);

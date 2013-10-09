@@ -31,9 +31,9 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       // Options are either an object, a function (enter callback), or an error
       var getter = $parse(attrs.uiWaypoints);
       var arg = getter(scope);
-      if(typeof(arg) == 'object') {
+      if(typeof(arg) === 'object') {
         options = angular.extend(options,arg);
-      } else if(typeof(arg) == 'function') {
+      } else if(typeof(arg) === 'function') {
         options.both = arg;
       } else {
         throw new Error("ui-waypoints requires an expression that evaluates to either a function or an object");
@@ -62,14 +62,14 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
               } else if (options.offset.charAt(0) === '+') {
                 offset[reference] = offset[reference] + parseFloat(attrs.uiWaypoints.substr(1));
               }
-            } else if(typeof(options.offset[reference]) == "number") {
+            } else if(typeof(options.offset[reference]) === "number") {
               offset[reference] = offset[reference] + options.offset[reference];
             }// Offset established
           }
         }
 
         return offset;
-      }
+      };
       
       
 
@@ -105,11 +105,13 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
 
           // Select the offset based on whether we're interested in vertical or horizontal
           var currentOffset = yOffset;
-          if(activeDirection == "horizontal") {
+          if(activeDirection === "horizontal") {
             currentOffset = xOffset;
           }
+
+          var direction = null;
           if(above[activeDirection] && currentOffset > offset[activeDirection]) {
-            var direction = activeDirection == "vertical" ? "down" : "right";
+            direction = activeDirection === "vertical" ? "down" : "right";
             if(options.enter) {
               options.enter(direction, elm[0]);
             }
@@ -120,7 +122,7 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
               
             above[activeDirection] = false;
           } else if(!above[activeDirection] && currentOffset < offset[activeDirection]) {
-            var direction = activeDirection == "vertical" ? "up" : "left";
+            direction = activeDirection === "vertical" ? "up" : "left";
             if(options.exit) {
               options.exit(direction, elm[0]);
             }
