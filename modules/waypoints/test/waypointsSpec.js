@@ -102,7 +102,59 @@ describe('uiWaypoints', function () {
       expect(scope.f).toHaveBeenCalledWith('right', $fixture[0]);
     });
 
-    
-    
+    it('should respect the offset parameter in the vertical direction', function () {
+      scope.g = function(){};
+      spyOn(scope, 'g');
+      scope.waypoints = {
+        enter: scope.g,
+        offset: {
+          vertical: "+100"
+        }
+      };
+
+      // Test Fixture
+      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="waypoints"></div><div style="height:900px">');
+      $container.append(element);
+      $compile($body.contents())(scope);
+      var $fixture = angular.element("#test");
+
+      // Scroll past, but not enough to trigger given the offset
+      angular.element($window).scrollTop($fixture.offset().top + 50);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).not.toHaveBeenCalled();
+
+      // Now scroll past enough to trigger
+      angular.element($window).scrollTop($fixture.offset().top + 200);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).toHaveBeenCalledWith('down', $fixture[0]);
+    });
+
+it('should respect the offset parameter in the horizontal direction', function () {
+      scope.g = function(){};
+      spyOn(scope, 'g');
+      scope.waypoints = {
+        enter: scope.g,
+        offset: {
+          horizontal: "-100"
+        }
+      };
+
+      // Test Fixture
+      var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test" ui-waypoints="waypoints" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
+      $container.append(element);
+      $compile($body.contents())(scope);
+      var $fixture = angular.element("#test");
+
+      // Scroll past, but not enough to trigger given the offset
+      angular.element($window).scrollLeft($fixture.offset().left - 150);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).not.toHaveBeenCalled();
+
+      // Now scroll past enough to trigger
+      angular.element($window).scrollLeft($fixture.offset().left - 99);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).toHaveBeenCalledWith('right', $fixture[0]);
+    });
+
   });
 });
