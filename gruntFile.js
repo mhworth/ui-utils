@@ -35,7 +35,7 @@ module.exports = function (grunt) {
   // Project configuration.
   initConfig = {
     bower: 'bower_components',
-    dist : '<%= bower %>/angular-ui-docs',
+    dist : 'build',
     pkg: grunt.file.readJSON('package.json'),
     meta: {
       banner: ['/**',
@@ -50,10 +50,10 @@ module.exports = function (grunt) {
         repoName : "ui-utils",
         demoJS : grunt.file.read("demo/demo.js"),
         js : [
-          'build/<%= meta.view.repoName %>.min.js'
+          '<%= meta.view.repoName %>.min.js'
         ]
       },
-      destName : '<%= dist %>/build/<%= meta.view.repoName %>'
+      destName : '<%= dist %>/<%= meta.view.repoName %>'
     },
     watch: {
       karma: {
@@ -120,7 +120,11 @@ module.exports = function (grunt) {
           {src: ['demo/demo.js'], dest: '<%= dist %>/core/demo.js', filter: 'isFile'},
 
           // UI.Include needs a external html source.
-          {src: ['modules/include/demo/fragments.html'], dest: '<%= dist %>/assets/fragments.html', filter: 'isFile'}
+          {src: ['modules/include/demo/fragments.html'], dest: '<%= dist %>/assets/fragments.html', filter: 'isFile'},
+          
+          // Demo assets
+          {expand: true, src: ['**'], dest: '<%= dist %>/', cwd: '<%= bower %>/angular-ui-docs/'}
+          
         ]
       },
       template : {
@@ -128,7 +132,7 @@ module.exports = function (grunt) {
           return grunt.template.process(content);
         }},
         files: [
-          {src: ['<%= dist %>/.tmpl/index.tmpl'], dest: '<%= dist %>/index.html'}
+          {src: ['<%= bower %>/angular-ui-docs/.tmpl/index.tmpl'], dest: '<%= dist %>/index.html'}
         ]
       }
     }
