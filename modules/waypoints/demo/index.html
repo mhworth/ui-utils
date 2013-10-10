@@ -16,7 +16,7 @@
         }
       </script>
 
-      <div id="waypointsExample" class="well" ng-controller="WaypointsExampleCtrl" style="height:1000px">
+      <div id="waypointsExample" class="well" ng-controller="WaypointsExampleCtrl" style="height:500px">
         <p style="height: 100px">Try scrolling past the red text or changing the offset</p>
         <p ui-waypoints="callback" style="color: red; height: 100px">They see me scrollin...</p>
         
@@ -26,28 +26,46 @@
     <div class="span6">
       <h3>Why?</h3>
 
-      <p>Make elements sticky, trigger class changes on different menu elements (e.g. in a sticky navbar) when key elements are passed</p>
+      <p>Trigger class changes on different menu elements (e.g. in a sticky navbar) when key elements are passed, trigger animations based on page position</p>
 
     </div>
   </div>
 
   <h3>How?</h3>
-  <pre class="prettyprint">&lt;p ui-waypoints="callback"&gt;They see me scrollin...&lt;/p&gt;</pre>
+
+  <h4>Define your callback function</h4>
+  <pre class="prettyprint">$scope.callback = function(direction, element) {
+    $scope.callback = function(direction, element) {
+      $scope.direction = direction;
+    };
+  }
+  </pre>
+
+  <h4>Configure ui-waypoints</h4>
+  <pre class="prettyprint">
+    &lt;p ui-waypoints="callback"&gt;They see me scrollin...&lt;/p&gt;
+    &lt;p id="waypointsOutput" ng-hide="direction == null"&gt;You scrolled {{direction}} past the message&lt;/p&gt;
+  </pre>
+  <p>The argument to ui-waypoints should be an expression that evaluates to either an object or a function.</p>
+  <p>If it is a function, the function will be called with the arguments (direction, element),
+   where direction is a string that is one of "up", "down", "left", or "right". The element
+   will be the element that triggered the callback.</p>
+  <p>
   <p>You can optionally pass an object to waypoints <code>ui-waypoints</code>. The following options are valid:
     <table>
       <tr><th>Attribute</th><th>Description</th></tr>
       <tr>
-        <td><code> enter </code></td><td><code> Function that is called when transition from above to below or left to right. Passed the direction (down, right), and the element. </code></td>
+        <td><code> enter </code></td><td> Function that is called when transition from above to below or left to right. Passed the direction (down, right), and the element. </td>
       </tr>
       <tr>
-        <td><code> exit </code></td><td><code> Function that is called when transitioning from below to above or right to left. Passed the direction (up, left), and the element.</code></td>
+        <td><code> exit </code></td><td> Function that is called when transitioning from below to above or right to left. Passed the direction (up, left), and the element.</td>
       </tr>
       <tr>
-        <td><code> both </code></td><td><code> Function that is called when transitioning in either directionPassed the direction (left, right up, down), and the element. </code></td>
+        <td><code> both </code></td><td> Function that is called when transitioning in either directionPassed the direction (left, right up, down), and the element. </td>
       </tr>
       <tr>
-        <td><code> offset </code></td><td><code> Object which specifies the the detected y-offset of the element. Should be an object that looks like <code>{"vertical": 10, "horizontal":15}</code>. Values can be either absolute
-    <code>600</code> or offset from the calculated value -50 or +100. In the latter case, they should be strings, and in the former, numbers. </code></td>
+        <td><code> offset </code></td><td> Object which specifies the the detected y-offset of the element. Should be an object that looks like <code>{"vertical": 10, "horizontal":15}</code>. Values can be either absolute
+    <code>600</code> or offset from the calculated value -50 or +100. In the latter case, they should be strings, and in the former, numbers.</td>
       </tr>
     which would override the detected y-offset of the element. Values can be either absolute
     <code>600</code> or offset from the calculated value <code>-50</code> or <code>+100</code>.</p>
