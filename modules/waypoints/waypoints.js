@@ -42,12 +42,11 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       // This is what we will watch for scrolling events; defaults to window if not otherwise specified
       var $target = uiWaypointsTarget && uiWaypointsTarget.$element || angular.element($window);
 
-
-      var getCurrentOffsets = function() {
+      var getTargetOffsets = function(targetElement) {
         // Get the current offsets
-        var top = elm[0].offsetTop,
-            left = elm[0].offsetLeft;
-        
+        var top = targetElement[0].offsetTop,
+            left = targetElement[0].offsetLeft;
+
         // Decide on the location to trigger the events from
         var offset = {vertical: top, horizontal: left};
         var references = ["vertical", "horizontal"];
@@ -59,16 +58,33 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
               // charAt is generally faster than indexOf: http://jsperf.com/indexof-vs-charat
               if (options.offset[reference].charAt(0) === '-') {
                 offset[reference] = offset[reference] - parseFloat(options.offset[reference].substr(1));
-              } else if (options.offset.charAt(0) === '+') {
-                offset[reference] = offset[reference] + parseFloat(attrs.uiWaypoints.substr(1));
+              } else if (options.offset[reference].charAt(0) === '+') {
+                offset[reference] = offset[reference] + parseFloat(options.offset[reference].substr(1));
               }
             } else if(typeof(options.offset[reference]) === "number") {
               offset[reference] = offset[reference] + options.offset[reference];
             }// Offset established
           }
         }
-
         return offset;
+      };
+
+      var getCurrentWindowOffsets = function() {
+        // if pageYOffset is defined use it, otherwise use other crap for IE
+        var xOffset, yOffset;
+        if (angular.isDefined($window.pageYOffset)) {
+          yOffset = $window.pageYOffset;
+          xOffset = $window.pageXOffset;
+        } else {
+          var iebody = (document.compatMode && document.compatMode !== "BackCompat") ? document.documentElement : document.body;
+          yOffset = iebody.scrollTop;
+          xOffset = iebody.scrollLeft;
+        }
+
+        return {
+          vertical: yOffset,
+          horizontal: xOffset
+        };
       };
       
       
@@ -82,20 +98,12 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
 
       $target.bind('scroll', function () {
 
-        // if pageYOffset is defined use it, otherwise use other crap for IE
-        var xOffset, yOffset;
-        if (angular.isDefined($window.pageYOffset)) {
-          yOffset = $window.pageYOffset;
-          xOffset = $window.pageXOffset;
-        } else {
-          var iebody = (document.compatMode && document.compatMode !== "BackCompat") ? document.documentElement : document.body;
-          yOffset = iebody.scrollTop;
-          xOffset = iebody.scrollLeft;
-        }
+
+        // Get the window offsets
+        var windowOffsets = getCurrentWindowOffsets();
 
         // Get the current offset
-        var offset = getCurrentOffsets();
-        
+        var offset = getTargetOffsets(elm);
 
         // Do callbacks
         var directions = ["vertical","horizontal"];
@@ -104,10 +112,7 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
           var activeDirection = directions[i];
 
           // Select the offset based on whether we're interested in vertical or horizontal
-          var currentOffset = yOffset;
-          if(activeDirection === "horizontal") {
-            currentOffset = xOffset;
-          }
+          var currentOffset = windowOffsets[activeDirection];
 
           var direction = null;
           if(above[activeDirection] && currentOffset > offset[activeDirection]) {

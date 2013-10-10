@@ -32,10 +32,10 @@ describe('uiWaypoints', function () {
       spyOn(scope, 'f');
 
       // Test Fixture
-      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="f"></div><div style="height:900px">');
+      var element = angular.element('<div style="height:1500px"></div><div id="test1" ui-waypoints="f"></div><div style="height:1500px">');
       $container.append(element);
       $compile($body.contents())(scope);
-      var $fixture = angular.element("#test");
+      var $fixture = angular.element("#test1");
 
       // Scroll the window to the test element
       angular.element($window).scrollTop($fixture.offset().top + 1);
@@ -51,10 +51,10 @@ describe('uiWaypoints', function () {
       spyOn(scope, 'enter');
 
       // Test Fixture
-      var element = angular.element('<div><div style="height:900px"></div><div id="test" ui-waypoints="{\'enter\': enter}"></div><div style="height:900px"></div>');
+      var element = angular.element('<div><div style="height:1500px"></div><div id="test2" ui-waypoints="{\'enter\': enter}"></div><div style="height:1500px"></div>');
       $container.append(element);
       $compile($body.contents())(scope);
-      var $fixture = angular.element("#test");
+      var $fixture = angular.element("#test2");
 
       // Scroll past
       angular.element($window).scrollTop($fixture.offset().top + 50);
@@ -69,10 +69,10 @@ describe('uiWaypoints', function () {
       spyOn(scope, 'g');
 
       // Test Fixture
-      var element = angular.element('<div style="height:900px"></div><div id="test" ui-waypoints="{\'exit\': g}"></div><div style="height:900px">');
+      var element = angular.element('<div style="height:1500px"></div><div id="test3" ui-waypoints="{\'exit\': g}"></div><div style="height:1500px">');
       $container.append(element);
       $compile($body.contents())(scope);
-      var $fixture = angular.element("#test");
+      var $fixture = angular.element("#test3");
 
       // Scroll past
       angular.element($window).scrollTop($fixture.offset().top + 50);
@@ -91,10 +91,11 @@ describe('uiWaypoints', function () {
       spyOn(scope, 'f');
 
       // Test Fixture
-      var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test" ui-waypoints="{\'enter\': f}" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
+      var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test4" ui-waypoints="{\'enter\': f}" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
       $container.append(element);
       $compile($body.contents())(scope);
-      var $fixture = angular.element("#test");
+      var $fixture = angular.element("#test4");
+
       // Scroll past
       angular.element($window).scrollLeft($fixture.offset().left + 50);
       angular.element($window).trigger('scroll');
@@ -102,7 +103,59 @@ describe('uiWaypoints', function () {
       expect(scope.f).toHaveBeenCalledWith('right', $fixture[0]);
     });
 
-    
-    
+    it('should respect the offset parameter in the vertical direction', function () {
+      scope.g = function(){};
+      spyOn(scope, 'g');
+      scope.waypoints = {
+        enter: scope.g,
+        offset: {
+          vertical: "+100"
+        }
+      };
+
+      // Test Fixture
+      var element = angular.element('<div style="height:1200px"></div><div id="test5" ui-waypoints="waypoints"></div><div style="height:1200px"></div>');
+      $container.append(element);
+      $compile($body.contents())(scope);
+      var $fixture = angular.element("#test5");
+
+      // Scroll past, but not enough to trigger given the offset
+      angular.element($window).scrollTop($fixture.offset().top + 50);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).not.toHaveBeenCalled();
+
+      // Now scroll past enough to trigger
+      angular.element($window).scrollTop($fixture.offset().top + 200);
+      angular.element($window).triggerHandler('scroll');
+      expect(scope.g).toHaveBeenCalledWith('down', $fixture[0]);
+    });
+
+it('should respect the offset parameter in the horizontal direction', function () {
+      scope.g = function(){};
+      spyOn(scope, 'g');
+      scope.waypoints = {
+        enter: scope.g,
+        offset: {
+          horizontal: "-100"
+        }
+      };
+
+      // Test Fixture
+      var element = angular.element('<div style="white-space: nowrap; width:4000px;"><span style="height:10px; width:1300px; display: inline-block;">Test1</span><span id="test6" ui-waypoints="waypoints" style="display:inline-block; width:1200px; height: 10px">Test2</span></div>');
+      $container.append(element);
+      $compile($body.contents())(scope);
+      var $fixture = angular.element("#test6");
+
+      // Scroll past, but not enough to trigger given the offset
+      angular.element($window).scrollLeft($fixture.offset().left - 150);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).not.toHaveBeenCalled();
+
+      // Now scroll past enough to trigger
+      angular.element($window).scrollLeft($fixture.offset().left - 99);
+      angular.element($window).trigger('scroll');
+      expect(scope.g).toHaveBeenCalledWith('right', $fixture[0]);
+    });
+
   });
 });
