@@ -105,19 +105,21 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       }
 
       // Options are either an object, a function (enter callback), a string (class to assign), completely empty (ui-scrollfix) or an error
-      if(attrs.uiWaypoints == null || attrs.uiWaypoints == '') {
+      if(attrs.uiWaypoints === null || attrs.uiWaypoints === '') {
         // no args, assume ui-scrollfix functionality
         options.addClass = 'ui-scrollfix';
         options.updateOffset = false;
       } else if(attrs.uiWaypoints.charAt(0) === '+' || 
                 attrs.uiWaypoints.charAt(0) === '-' || 
-                !isNaN(parseInt(attrs.uiWaypoints))) {
+                !isNaN(parseInt(attrs.uiWaypoints, 10))) {
         
         // They may are trying to specify an offset for ui-scrollfix functionality
         options.offset.vertical = attrs.uiWaypoints;// Covers string case
 
         // Covers numeric case
-        if(!isNaN(parseInt(attrs.uiWaypoints))) options.offset.vertical = parseInt(attrs.uiWaypoints);
+        if(!isNaN(parseInt(attrs.uiWaypoints, 10))) {
+          options.offset.vertical = parseInt(attrs.uiWaypoints, 10);
+        }
         
         options.addClass = 'ui-scrollfix';
       } else {
@@ -139,8 +141,12 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
       
 
       // Sanitize options
-      if(options.offset.vertical == null) options.offset.vertical = 0;
-      if(options.offset.horizontal == null) options.offset.horizontal = 0;
+      if(options.offset.vertical == null) {
+        options.offset.vertical = 0;
+      }
+      if(options.offset.horizontal == null) { 
+        options.offset.horizontal = 0;
+      }
       if(options.verticalOffset) {
         options.offset.vertical = options.verticalOffset;
       }
@@ -170,8 +176,9 @@ angular.module('ui.waypoints',[]).directive('uiWaypoints', ['$window', "$parse",
         // The triggered flag is necessary to make sure that we keep updating the location of
         //   the subject until it is first encountered. This prevents jumping around of the
         //   target offset location as the page/js is loading. Likely a better way to do this.
-        if(options.updateOffset || !triggered)
+        if(options.updateOffset || !triggered) {
           offset = getTargetOffsets(elm, options);
+        }
 
         // Do callbacks
         var directions = ["vertical","horizontal"];
